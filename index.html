@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thuiszorg Checklist - Familie Jamias</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 900px; margin: 20px auto; padding: 20px; background: #f9f9f9; }
+        h1, h2, h3 { text-align: center; }
+        #login-screen { max-width: 400px; margin: 100px auto; padding: 30px; background: white; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.2); }
+        #login-screen input { width: 100%; padding: 10px; margin: 10px 0; font-size: 16px; }
+        #login-screen button { width: 100%; padding: 12px; background: #4CAF50; color: white; border: none; border-radius: 8px; font-size: 18px; cursor: pointer; }
+        #logout { position: absolute; top: 20px; right: 20px; padding: 8px 16px; background: #f44336; color: white; border: none; border-radius: 8px; cursor: pointer; }
+        .tabs { display: flex; justify-content: center; flex-wrap: wrap; margin-bottom: 20px; }
+        .tab { padding: 10px 20px; background: #ddd; margin: 5px; cursor: pointer; border-radius: 8px; }
+        .tab.active { background: #4CAF50; color: white; }
+        .checklist { display: none; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        .checklist.active { display: block; }
+        .task { margin: 15px 0; padding: 10px; background: #f0f0f0; border-radius: 8px; }
+        .reason { display: none; margin-top: 10px; }
+        .reason textarea { width: 100%; height: 80px; padding: 8px; }
+        button.main-btn { padding: 12px 24px; background: #4CAF50; color: white; border: none; border-radius: 8px; font-size: 18px; cursor: pointer; display: block; margin: 30px auto; }
+        #result, #overview { margin-top: 30px; padding: 20px; background: #e8f5e9; border-radius: 10px; }
+        #logged-in-as { text-align: center; font-weight: bold; margin-bottom: 20px; }
+        .hidden { display: none; }
+        .overview-list { list-style: none; padding: 0; }
+        .overview-item { background: white; padding: 15px; margin: 10px 0; border-radius: 8px; box-shadow: 0 0 5px rgba(0,0,0,0.1); cursor: pointer; }
+        .overview-item:hover { background: #f0f0f0; }
+        pre { white-space: pre-wrap; }
+    </style>
+</head>
+<body>
+
+    <!-- Login scherm -->
+    <div id="login-screen">
+        <h1>Inloggen</h1>
+        <p>Thuiszorg Checklist - Familie Jamias</p>
+        <input type="text" id="username" placeholder="Gebruikersnaam (kleine letters)" autocomplete="username">
+        <input type="password" id="password" placeholder="Wachtwoord" autocomplete="current-password">
+        <button onclick="login()">Inloggen</button>
+        <p id="login-error" style="color:red; text-align:center; display:none;">Verkeerde gebruikersnaam of wachtwoord</p>
+    </div>
+
+    <!-- Hoofdapp -->
+    <div id="app" class="hidden">
+        <button id="logout" onclick="logout()">Logout</button>
+        <h1>Thuiszorg Checklist - Familie Jamias</h1>
+        <p id="date-time" style="text-align:center; font-weight:bold;"></p>
+        <div id="logged-in-as"></div>
+
+        <!-- Medewerker view -->
+        <div id="employee-view">
+            <div class="tabs">
+                <div class="tab active" onclick="openTab('ochtend')">Ochtenddienst</div>
+                <div class="tab" onclick="openTab('middag')">Middagdienst</div>
+                <div class="tab" onclick="openTab('nacht')">Nachtdienst</div>
+            </div>
+
+            <!-- Checklists (zelfde als voorheen) -->
+            <div id="ochtend" class="checklist active">
+                <h2>Ochtenddienst</h2>
+                <!-- Taken zoals voorheen -->
+                <div class="task"><label><input type="checkbox" class="task-check"> Ontbijt</label></div>
+                <div class="task"><label><input type="checkbox" class="task-check"> Medicatie</label></div>
+                <div class="task"><label><input type="checkbox" class="task-check"> Buitenlichten uit</label></div>
+                <div class="task"><label><input type="checkbox" class="task-check"> Baden</label></div>
+                <div class="task"><label><input type="checkbox" class="task-check"> Tandenpoetsen</label></div>
+                <div class="task"><label><input type="checkbox" class="task-check"> Sociale activiteiten doen</label></div>
+                <div class="task"><label><input type="checkbox" class="task-check"> Tussendoortje</label></div>
+                <div class="task"><label><input type="checkbox" class="task-check"> Middagmaaltijd</label></div>
+                <div class="task"><label><input type="checkbox" class="task-check"> Medicatie</label></div>
+
+                <button class="main-btn" onclick="completeChecklist('ochtend')">Checklist voltooien</button>
+            </div>
+
+            <div id="middag" class="checklist">
+                <h2>Middagdienst</h2>
+                <!-- Taken -->
+                <div class="task"><label><input type="checkbox" class="task-check"> Tussendoortje</label></div>
+                <div class="task"><label><input type="checkbox" class="task-check"> Sociale activiteiten</label></div>
+                <div class="task"><label><input type="checkbox" class="task-check"> Honden eten geven</label></div>
+                <div class="task"><label><input type="checkbox" class="task-check"> Wandeling</label></div>
+                <div class="task"><label><input type="checkbox" class="task-check"> Avondmaaltijd</label></div>
+                <div class="task"><label><input type="checkbox" class="task-check"> Buitenlichten aan</label></div>
+                <div class="task"><label><input type="checkbox" class="task-check"> Baden</label></div>
+                <div class="task"><label><input type="checkbox" class="task-check"> Tandenpoetsen</label></div>
+                <div class="task"><label><input type="checkbox" class="task-check"> Bed</label></div>
+
+                <button class="main-btn" onclick="completeChecklist('middag')">Checklist voltooien</button>
+            </div>
+
+            <div id="nacht" class="checklist">
+                <h2>Nachtdienst</h2>
+                <div class="task"><label><input type="checkbox" class="task-check"> Lichten uit in de gang</label></div>
+                <div class="task"><label><input type="checkbox" class="task-check"> Lichten uit in de achterkamer</label></div>
+                <div class="task"><label><input type="checkbox" class="task-check"> Lichten uit in de keuken</label></div>
+                <div class="task"><label><input type="checkbox" class="task-check"> Lichten uit in de eetzaal</label></div>
+
+                <button class="main-btn" onclick="completeChecklist('nacht')">Checklist voltooien</button>
+            </div>
+
+            <div id="result"></div>
+        </div>
+
+        <!-- Coördinator view -->
+        <div id="coordinator-view" class="hidden">
+            <h2>Overzicht ingevulde checklists</h2>
+            <ul id="overview-list" class="overview-list"></ul>
+            <div id="overview-detail"></div>
+        </div>
+    </div>
+
+    <script>
+        // Gebruikers met hashes (voeg coördinator toe)
+        const users = {
+            "anna": "0d9795cdca499a39c08e9306f560e0b35161b532ee413145c1df7e186e203bad",
+            "bert": "3902646e04bc38da378e8fd06d0f669ad43432a184a679298493aa45e68a9ac8",
+            "clara": "dd7f76e1d733448db44e43025e7d24c5e9fae01c99a5b71b6758072931c2780f",
+            "daan": "6f0f62615ca283f628039d1e6392972e882551613c1caf8345cbc62a9a83e128",
+            "esther": "51dcc4305bf6b79345e071926ddecbde45192085949797867be4a4621da3d775",
+            "frank": "027b6e15ca54a34f51c832dfea15ccf64720ca39bb9a8776f3b78db9a4025c31",
+            "gina": "f2aac861ce7e597434a3f2c41fbec9fae0f61b65b6236dfde9657c6886561e02",
+            "hans": "c0da6894fbee607a608cddc000266f19806ce119146f534ff9e3b4401437b6c6",
+            "coordinator": "0d9795cdca499a39c08e9306f560e0b35161b532ee413145c1df7e186e203bad"  // Coordinator2026!
+        };
+
+        let currentUser = null;
+        let isCoordinator = false;
+
+        async function hashPassword(password) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(password);
+            const hash = await crypto.subtle.digest('SHA-256', data);
+            return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        const now = new Date();
+        document.getElementById('date-time').textContent = `Datum: ${now.toLocaleDateString('nl-NL')} | Tijd: ${now.toLocaleTimeString('nl-NL')}`;
+
+        async function login() {
+            const username = document.getElementById('username').value.trim().toLowerCase();
+            const password = document.getElementById('password').value;
+
+            const hashedPassword = await hashPassword(password);
+
+            if (users[username] && users[username] === hashedPassword) {
+                currentUser = username.charAt(0).toUpperCase() + username.slice(1);
+                isCoordinator = username === 'coordinator';
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('app').classList.remove('hidden');
+                document.getElementById('logged-in-as').textContent = `Ingelogd als: ${currentUser}${isCoordinator ? ' (Coördinator)' : ''}`;
+
+                if (isCoordinator) {
+                    document.getElementById('employee-view').classList.add('hidden');
+                    document.getElementById('coordinator-view').classList.remove('hidden');
+                    loadOverview();
+                } else {
+                    document.getElementById('employee-view').classList.remove('hidden');
+                    document.getElementById('coordinator-view').classList.add('hidden');
+                }
+                document.getElementById('login-error').style.display = 'none';
+            } else {
+                document.getElementById('login-error').style.display = 'block';
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            isCoordinator = false;
+            document.getElementById('app').classList.add('hidden');
+            document.getElementById('login-screen').classList.remove('hidden');
+            document.getElementById('result').innerHTML = '';
+            document.getElementById('overview-detail').innerHTML = '';
+        }
+
+        function openTab(tabName) {
+            document.querySelectorAll('.checklist').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            document.querySelector(`.tab[onclick="openTab('${tabName}')"]`).classList.add('active');
+            document.getElementById('result').innerHTML = '';
+        }
+
+        // Opslaan en voltooien (voor medewerkers)
+        function completeChecklist(sectionId) {
+            if (isCoordinator || !currentUser) return;
+
+            const checklistDiv = document.getElementById(sectionId);
+            const tasks = checklistDiv.querySelectorAll('.task');
+            const button = checklistDiv.querySelector('.main-btn');
+
+            let hasUnchecked = false;
+            let allReasonsFilled = true;
+
+            tasks.forEach(task => {
+                const checkbox = task.querySelector('.task-check');
+                if (!checkbox.checked) {
+                    hasUnchecked = true;
+                    let reasonDiv = task.querySelector('.reason');
+                    if (!reasonDiv) {
+                        reasonDiv = document.createElement('div');
+                        reasonDiv.className = 'reason';
+                        reasonDiv.innerHTML = `<label>Reden waarom niet uitgevoerd:</label><textarea placeholder="Verplicht invullen..."></textarea>`;
+                        task.appendChild(reasonDiv);
+                    }
+                    reasonDiv.style.display = 'block';
+                    const textarea = reasonDiv.querySelector('textarea');
+                    if (textarea.value.trim() === '') allReasonsFilled = false;
+                }
+            });
+
+            if (!hasUnchecked || (hasUnchecked && allReasonsFilled)) {
+                let summary = `=== ${checklistDiv.querySelector('h2').textContent} ===\n`;
+                summary += `Datum: ${now.toLocaleDateString('nl-NL')} | Tijd: ${now.toLocaleTimeString('nl-NL')}\n`;
+                summary += `Medewerker: ${currentUser}\n\nTaken:\n`;
+
+                tasks.forEach(task => {
+                    const checkbox = task.querySelector('.task-check');
+                    const label = task.querySelector('label').textContent.trim();
+                    if (checkbox.checked) {
+                        summary += `✓ ${label}\n`;
+                    } else {
+                        const reason = task.querySelector('.reason textarea').value.trim();
+                        summary += `✗ ${label}\n   Reden: ${reason}\n\n`;
+                    }
+                });
+
+                summary += `Klaar!`;
+
+                // Opslaan in localStorage
+                let savedChecklists = JSON.parse(localStorage.getItem('checklists') || '[]');
+                savedChecklists.push({
+                    date: now.toLocaleDateString('nl-NL'),
+                    time: now.toLocaleTimeString('nl-NL'),
+                    user: currentUser,
+                    dienst: checklistDiv.querySelector('h2').textContent,
+                    summary: summary
+                });
+                localStorage.setItem('checklists', JSON.stringify(savedChecklists));
+
+                document.getElementById('result').innerHTML = `<h2>Checklist voltooid en opgeslagen!</h2><pre>${summary}</pre>`;
+                button.textContent = 'Checklist voltooien';
+            } else {
+                alert('Vul de redenen in voor de niet-afgevinkte taken.');
+                button.textContent = 'Definitief voltooien';
+            }
+        }
+
+        // Overzicht laden (voor coördinator)
+        function loadOverview() {
+            const savedChecklists = JSON.parse(localStorage.getItem('checklists') || '[]');
+            const list = document.getElementById('overview-list');
+            list.innerHTML = '';
+
+            if (savedChecklists.length === 0) {
+                list.innerHTML = '<p>Geen checklists ingevuld yet.</p>';
+                return;
+            }
+
+            savedChecklists.reverse().forEach((item, index) => {
+                const li = document.createElement('li');
+                li.className = 'overview-item';
+                li.textContent = `${item.date} ${item.time} - ${item.user} - ${item.dienst}`;
+                li.onclick = () => {
+                    document.getElementById('overview-detail').innerHTML = `<h3>Details</h3><pre>${item.summary}</pre>`;
+                };
+                list.appendChild(li);
+            });
+        }
+    </script>
+</body>
+</html>
