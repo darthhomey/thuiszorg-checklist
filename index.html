@@ -52,27 +52,48 @@
         <div id="employee-view">
             <div class="tabs">
                 <div class="tab active" onclick="openTab('algemeen')">Algemeen</div>
-                <div class="tab active" onclick="openTab('medicatie')">Medicatie</div>
-                <div class="tab active" onclick="openTab('gewoontes')">Gewoontes</div>
-                <div class="tab active" onclick="openTab('ochtend')">Ochtenddienst(A-dienst)</div>
+                <div class="tab" onclick="openTab('medicatie')">Medicatie</div>
+                <div class="tab" onclick="openTab('gewoontes')">Gewoontes</div>
+                <div class="tab" onclick="openTab('ochtend')">Ochtenddienst(A-dienst)</div>
                 <div class="tab" onclick="openTab('middag')">Middagdienst(B-dienst)</div>
                 <div class="tab" onclick="openTab('avond')">Avonddienst(C-dienst)</div>
                 <div class="tab" onclick="openTab('nacht')">Nachtdienst(D-dienst)</div>
             </div>
 
             <!-- Checklists (zelfde als voorheen) -->
-            <div id="algemeen">
+            <div id="algemeen" class="checklist active">
                 <h2>Algemeen</h2>
                 <!-- Taken zoals voorheen -->
-                <p>-Handen wassen voordat het eten bereid wordt.</p>
-                <p>-De verpleegsters herinneren de ventilator in de eetzaal uit te doen als niemand daar zit.</p>
-                <p>-Vuilniszakken moeten op de dinsdag en vrijdag ochtend buitengezet worden, naast die fajalobies buiten de poort op het gras voorop.</p>
-                <p>-Graag tv programmaprogramma’s voor mama zetten.</p>
-                <p>-De stekker van het fornuis moet ter alle tijden uit het stopcontact, want mama wil soms koken.</p>
+                <p>- Handen wassen voordat het eten bereid wordt.</p>
+                <p>- De ventilator in de eetzaal uit te doen als niemand daar zit.</p>
+                <p>- Vuilniszakken moeten op de dinsdag en vrijdag ochtend buitengezet worden, naast die fajalobies buiten de poort op het gras voorop.</p>
+                <p>- Graag tv programmaprogramma’s voor mama zetten.</p>
+                <p>- De stekker van het fornuis moet ter alle tijden uit het stopcontact, want mama wil soms koken.</p>
+            </div>
+			
+			<div id="medicatie" class="checklist">
+                <h2>Medicatie</h2>
+                <!-- Taken zoals voorheen -->
+                <p>- Dagelijks vitaminetabletten maar de soort is om de ene dag. Eén dag vitamine B12, de volgende dag de multi-vitamine, de dag daarna vitamine B12, de volgende dag de multi-vitamine enz.</p>
+                <p>- ‘s Morgens: Atenolol (50mg) en een vitamine* (B12 of multi-vitamine).</p>
+                <p>- ‘s Middags: Enalapril (20mg).</p>
+                <p>- ‘s Avonds: Simvastatine (20mg).</p>
+                <p>De apotheek geeft soms een sterkere dosering voor de Atenolol, dus er moet worden opgelet of de tablet gehalveerd moet worden. De medicijn instructies elke keer doornemen bij het herhalen van recepten om te dubbel checken of de tabletten gehalveerd moeten worden voor de juiste dosering.</p>
+            </div>
+			
+			<div id="gewoontes" class="checklist">
+                <h2>Gewoontes</h2>
+                <!-- Taken zoals voorheen -->
+                <p>- Mama houdt van countrymuziek luisteren.</p>
+				<p>- Mama houdt niet van lawaai of schreeuwen of als de TV te luid is.</p>
+                <p>- Mama houdt van om op balkon te zitten.</p>
+                <p>- Mama bezighouden met o.a. spelletje spelen, laten kleuren in haar kleuren boek, middag wandelingetje maken als het weer gunstig is.</p>
+                <p>- Keukendeur moet ter alle tijden op slot gehouden worden zodat mama niet weg kan.</p>
+				<p>- Mama heeft soms pijn aan haar been of arm en zet soms op. Als ze klaagt dat ze lichaamspijnen heeft, geef 1 tablet acetaminophen (of paracetamol). Mag maximaal 3x/ dag (een tablet ‘s Morgens, ‘s Middags en ‘s Avonds). Meestal verhelpt het al met 1 tablet.</p>
             </div>
 
             
-            <div id="ochtend" class="checklist active">
+            <div id="ochtend" class="checklist">
                 <h2>Ochtenddienst(A-dienst)</h2>
                 <!-- Taken zoals voorheen -->
                 <div class="task"><label><input type="checkbox" class="task-check"> Ontbijt</label></div>
@@ -294,6 +315,7 @@
 </body>
 
 </html>
+
 
 
 
