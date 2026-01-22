@@ -51,6 +51,9 @@
         <!-- Medewerker view -->
         <div id="employee-view">
             <div class="tabs">
+                <div class="tab active" onclick="openTab('algemeen')">Algemeen</div>
+                <div class="tab active" onclick="openTab('medicatie')">Medicatie</div>
+                <div class="tab active" onclick="openTab('gewoontes')">Gewoontes</div>
                 <div class="tab active" onclick="openTab('ochtend')">Ochtenddienst(A-dienst)</div>
                 <div class="tab" onclick="openTab('middag')">Middagdienst(B-dienst)</div>
                 <div class="tab" onclick="openTab('avond')">Avonddienst(C-dienst)</div>
@@ -58,6 +61,17 @@
             </div>
 
             <!-- Checklists (zelfde als voorheen) -->
+            <div id="algemeen">
+                <h2>Algemeen</h2>
+                <!-- Taken zoals voorheen -->
+                -Handen wassen voordat het eten bereid wordt
+                -De verpleegsters herinneren de ventilator in de eetzaal uit te doen als niemand daar zit
+                -Vuilniszakken moeten op de dinsdag en vrijdag ochtend buitengezet worden, naast die fajalobies buiten de poort op het gras voorop
+                -Graag tv programmaprogramma’s voor mama zetten
+                -De stekker van het fornuis moet ter alle tijden uit het stopcontact, want mama wil soms koken.
+            </div>
+
+            
             <div id="ochtend" class="checklist active">
                 <h2>Ochtenddienst(A-dienst)</h2>
                 <!-- Taken zoals voorheen -->
@@ -280,6 +294,7 @@
 </body>
 
 </html>
+
 
 
 
