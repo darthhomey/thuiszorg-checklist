@@ -51,18 +51,20 @@
         <!-- Medewerker view -->
         <div id="employee-view">
             <div class="tabs">
-                <div class="tab active" onclick="openTab('ochtend')">Ochtenddienst</div>
-                <div class="tab" onclick="openTab('middag')">Middagdienst</div>
-                <div class="tab" onclick="openTab('nacht')">Nachtdienst</div>
+                <div class="tab active" onclick="openTab('ochtend')">Ochtenddienst(A-dienst)</div>
+                <div class="tab" onclick="openTab('middag')">Middagdienst(B-dienst)</div>
+                <div class="tab" onclick="openTab('avond')">Avonddienst(C-dienst)</div>
+                <div class="tab" onclick="openTab('nacht')">Nachtdienst(D-dienst)</div>
             </div>
 
             <!-- Checklists (zelfde als voorheen) -->
             <div id="ochtend" class="checklist active">
-                <h2>Ochtenddienst</h2>
+                <h2>Ochtenddienst(A-dienst)</h2>
                 <!-- Taken zoals voorheen -->
                 <div class="task"><label><input type="checkbox" class="task-check"> Ontbijt</label></div>
                 <div class="task"><label><input type="checkbox" class="task-check"> Medicatie</label></div>
                 <div class="task"><label><input type="checkbox" class="task-check"> Buitenlichten uit</label></div>
+                <div class="task"><label><input type="checkbox" class="task-check"> Honden sneetje brood geven</label></div>
                 <div class="task"><label><input type="checkbox" class="task-check"> Baden</label></div>
                 <div class="task"><label><input type="checkbox" class="task-check"> Tandenpoetsen</label></div>
                 <div class="task"><label><input type="checkbox" class="task-check"> Sociale activiteiten doen</label></div>
@@ -74,10 +76,17 @@
             </div>
 
             <div id="middag" class="checklist">
-                <h2>Middagdienst</h2>
+                <h2>Middagdienst(B-dienst)</h2>
                 <!-- Taken -->
                 <div class="task"><label><input type="checkbox" class="task-check"> Tussendoortje</label></div>
                 <div class="task"><label><input type="checkbox" class="task-check"> Sociale activiteiten</label></div>
+            
+                <button class="main-btn" onclick="completeChecklist('middag')">Checklist voltooien</button>
+            </div>
+
+             <div id="middag" class="checklist">
+                <h2>Avonddienst(C-dienst)</h2>
+                <!-- Taken -->
                 <div class="task"><label><input type="checkbox" class="task-check"> Honden eten geven</label></div>
                 <div class="task"><label><input type="checkbox" class="task-check"> Wandeling</label></div>
                 <div class="task"><label><input type="checkbox" class="task-check"> Avondmaaltijd</label></div>
@@ -86,15 +95,16 @@
                 <div class="task"><label><input type="checkbox" class="task-check"> Tandenpoetsen</label></div>
                 <div class="task"><label><input type="checkbox" class="task-check"> Bed</label></div>
 
-                <button class="main-btn" onclick="completeChecklist('middag')">Checklist voltooien</button>
+                <button class="main-btn" onclick="completeChecklist('avond')">Checklist voltooien</button>
             </div>
 
             <div id="nacht" class="checklist">
-                <h2>Nachtdienst</h2>
+                <h2>Nachtdienst(D-dienst)</h2>
                 <div class="task"><label><input type="checkbox" class="task-check"> Lichten uit in de gang</label></div>
                 <div class="task"><label><input type="checkbox" class="task-check"> Lichten uit in de achterkamer</label></div>
                 <div class="task"><label><input type="checkbox" class="task-check"> Lichten uit in de keuken</label></div>
                 <div class="task"><label><input type="checkbox" class="task-check"> Lichten uit in de eetzaal</label></div>
+                <div class="task"><label><input type="checkbox" class="task-check"> Stekker uit stopcontact gasfornuis</label></div>
 
                 <button class="main-btn" onclick="completeChecklist('nacht')">Checklist voltooien</button>
             </div>
@@ -271,4 +281,5 @@
 </body>
 
 </html>
+
 
