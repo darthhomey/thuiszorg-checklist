@@ -1,326 +1,221 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thuiszorg Checklist</title>
-    <style>
-        body { font-family: Arial, sans-serif; max-width: 900px; margin: 20px auto; padding: 20px; background: #f9f9f9; }
-        h1, h2, h3 { text-align: center; }
-        #login-screen { max-width: 400px; margin: 100px auto; padding: 30px; background: white; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.2); }
-        #login-screen input { width: 100%; padding: 10px; margin: 10px 0; font-size: 16px; }
-        #login-screen button { width: 100%; padding: 12px; background: #4CAF50; color: white; border: none; border-radius: 8px; font-size: 18px; cursor: pointer; }
-        #logout { position: absolute; top: 20px; right: 20px; padding: 8px 16px; background: #f44336; color: white; border: none; border-radius: 8px; cursor: pointer; }
-        .tabs { display: flex; justify-content: center; flex-wrap: wrap; margin-bottom: 20px; }
-        .tab { padding: 10px 20px; background: #ddd; margin: 5px; cursor: pointer; border-radius: 8px; }
-        .tab.active { background: #4CAF50; color: white; }
-        .checklist { display: none; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        .checklist.active { display: block; }
-        .task { margin: 15px 0; padding: 10px; background: #f0f0f0; border-radius: 8px; }
-        .reason { display: none; margin-top: 10px; }
-        .reason textarea { width: 100%; height: 80px; padding: 8px; }
-        button.main-btn { padding: 12px 24px; background: #4CAF50; color: white; border: none; border-radius: 8px; font-size: 18px; cursor: pointer; display: block; margin: 30px auto; }
-        #result, #overview { margin-top: 30px; padding: 20px; background: #e8f5e9; border-radius: 10px; }
-        #logged-in-as { text-align: center; font-weight: bold; margin-bottom: 20px; }
-        .hidden { display: none; }
-        .overview-list { list-style: none; padding: 0; }
-        .overview-item { background: white; padding: 15px; margin: 10px 0; border-radius: 8px; box-shadow: 0 0 5px rgba(0,0,0,0.1); cursor: pointer; }
-        .overview-item:hover { background: #f0f0f0; }
-        pre { white-space: pre-wrap; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thuiszorg Checklist</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+body { font-family: Arial; max-width: 900px; margin: 20px auto; background:#f9f9f9; }
+.hidden { display:none; }
+#login-screen { max-width:400px; margin:100px auto; padding:30px; background:white; border-radius:10px; }
+.task { margin:10px 0; }
+button { padding:10px; margin-top:10px; }
+.tabs { display:flex; gap:10px; }
+.tab { padding:10px; background:#ddd; cursor:pointer; }
+.tab.active { background:#4CAF50; color:white; }
+.checklist { display:none; }
+.checklist.active { display:block; }
+</style>
 </head>
+
 <body>
 
-    <!-- Login scherm -->
-    <div id="login-screen">
-        <h1>Inloggen</h1>
-        <p>Thuiszorg Checklist</p>
-        <input type="text" id="username" placeholder="Gebruikersnaam (kleine letters)" autocomplete="username">
-        <input type="password" id="password" placeholder="Wachtwoord" autocomplete="current-password">
-        <button onclick="login()">Inloggen</button>
-        <p id="login-error" style="color:red; text-align:center; display:none;">Verkeerde gebruikersnaam of wachtwoord</p>
-    </div>
+<!-- LOGIN -->
+<div id="login-screen">
+<h2>Login</h2>
+<input type="email" id="email" placeholder="Email"><br>
+<input type="password" id="password" placeholder="Wachtwoord"><br>
+<button onclick="login()">Login</button>
+<button onclick="signup()">Account maken</button>
+<p id="error" style="color:red;"></p>
+</div>
 
-    <!-- Hoofdapp -->
-    <div id="app" class="hidden">
-        <button id="logout" onclick="logout()">Logout</button>
-        <h1>Thuiszorg Checklist</h1>
-        <p id="date-time" style="text-align:center; font-weight:bold;"></p>
-        <div id="logged-in-as"></div>
+<!-- APP -->
+<div id="app" class="hidden">
+<button onclick="logout()">Logout</button>
+<h1>Checklist</h1>
+<p id="logged-in-as"></p>
 
-        <!-- Medewerker view -->
-        <div id="employee-view">
-            <div class="tabs">
-                <div class="tab active" onclick="openTab('algemeen')">Algemeen</div>
-                <div class="tab" onclick="openTab('medicatie')">Medicatie</div>
-                <div class="tab" onclick="openTab('gewoontes')">Gewoontes</div>
-                <div class="tab" onclick="openTab('ochtend')">Ochtenddienst(A-dienst)</div>
-                <div class="tab" onclick="openTab('middag')">Middagdienst(B-dienst)</div>
-                <div class="tab" onclick="openTab('avond')">Avonddienst(C-dienst)</div>
-                <div class="tab" onclick="openTab('nacht')">Nachtdienst(D-dienst)</div>
-            </div>
+<!-- MEDEWERKER -->
+<div id="employee-view">
+<div class="tabs">
+<div class="tab active" onclick="openTab('ochtend')">Ochtend</div>
+<div class="tab" onclick="openTab('middag')">Middag</div>
+</div>
 
-            <!-- Checklists (zelfde als voorheen) -->
-            <div id="algemeen" class="checklist active">
-                <h2>Algemeen</h2>
-                <!-- Taken zoals voorheen -->
-                <p>- Handen wassen voordat het eten bereid wordt.</p>
-                <p>- De ventilator in de eetzaal uit te doen als niemand daar zit.</p>
-                <p>- Vuilniszakken moeten op de dinsdag en vrijdag ochtend buitengezet worden, naast die fajalobies buiten de poort op het gras voorop.</p>
-                <p>- Graag tv programmaprogramma’s voor mama zetten.</p>
-                <p>- De stekker van het fornuis moet ter alle tijden uit het stopcontact, want mama wil soms koken.</p>
-            </div>
-			
-			<div id="medicatie" class="checklist">
-                <h2>Medicatie</h2>
-                <!-- Taken zoals voorheen -->
-                <p>- Dagelijks vitaminetabletten maar de soort is om de ene dag. Eén dag vitamine B12, de volgende dag de multi-vitamine, de dag daarna vitamine B12, de volgende dag de multi-vitamine enz.</p>
-                <p>- ‘s Morgens: Atenolol (50mg) en een vitamine* (B12 of multi-vitamine).</p>
-                <p>- ‘s Middags: Enalapril (20mg).</p>
-                <p>- ‘s Avonds: Simvastatine (20mg).</p>
-                <p>De apotheek geeft soms een sterkere dosering voor de Atenolol, dus er moet worden opgelet of de tablet gehalveerd moet worden. De medicijn instructies elke keer doornemen bij het herhalen van recepten om te dubbel checken of de tabletten gehalveerd moeten worden voor de juiste dosering.</p>
-            </div>
-			
-			<div id="gewoontes" class="checklist">
-                <h2>Gewoontes</h2>
-                <!-- Taken zoals voorheen -->
-                <p>- Mama houdt van countrymuziek luisteren.</p>
-				<p>- Mama houdt niet van lawaai of schreeuwen of als de TV te luid is.</p>
-                <p>- Mama houdt van om op balkon te zitten.</p>
-                <p>- Mama bezighouden met o.a. spelletje spelen, laten kleuren in haar kleuren boek, middag wandelingetje maken als het weer gunstig is.</p>
-                <p>- Keukendeur moet ter alle tijden op slot gehouden worden zodat mama niet weg kan.</p>
-				<p>- Mama heeft soms pijn aan haar been of arm en zet soms op. Als ze klaagt dat ze lichaamspijnen heeft, geef 1 tablet acetaminophen (of paracetamol). Mag maximaal 3x/ dag (een tablet ‘s Morgens, ‘s Middags en ‘s Avonds). Meestal verhelpt het al met 1 tablet.</p>
-            </div>
+<div id="ochtend" class="checklist active">
+<div class="task"><input type="checkbox"> Ontbijt</div>
+<div class="task"><input type="checkbox"> Medicatie</div>
+<button onclick="completeChecklist('ochtend')">Opslaan</button>
+</div>
 
-            
-            <div id="ochtend" class="checklist">
-                <h2>Ochtenddienst(A-dienst)</h2>
-                <!-- Taken zoals voorheen -->
-                <div class="task"><label><input type="checkbox" class="task-check"> Ontbijt</label></div>
-                <div class="task"><label><input type="checkbox" class="task-check"> Medicatie</label></div>
-                <div class="task"><label><input type="checkbox" class="task-check"> Buitenlichten uit</label></div>
-                <div class="task"><label><input type="checkbox" class="task-check"> Honden sneetje brood gevenen water bijvullen</label></div>
-                <div class="task"><label><input type="checkbox" class="task-check"> Baden</label></div>
-                <div class="task"><label><input type="checkbox" class="task-check"> Tandenpoetsen</label></div>
-                <div class="task"><label><input type="checkbox" class="task-check"> Sociale activiteiten doen</label></div>
-                <div class="task"><label><input type="checkbox" class="task-check"> Tussendoortje</label></div>
-                <div class="task"><label><input type="checkbox" class="task-check"> Middagmaaltijd</label></div>
-                <div class="task"><label><input type="checkbox" class="task-check"> Medicatie</label></div>
+<div id="middag" class="checklist">
+<div class="task"><input type="checkbox"> Avondeten</div>
+<div class="task"><input type="checkbox"> Wandeling</div>
+<button onclick="completeChecklist('middag')">Opslaan</button>
+</div>
 
-                <button class="main-btn" onclick="completeChecklist('ochtend')">Checklist voltooien</button>
-            </div>
+<div id="result"></div>
+</div>
 
-            <div id="middag" class="checklist">
-                <h2>Middagdienst(B-dienst)</h2>
-                <!-- Taken -->
-                <div class="task"><label><input type="checkbox" class="task-check"> Tussendoortje</label></div>
-                <div class="task"><label><input type="checkbox" class="task-check"> Sociale activiteiten</label></div>
-            
-                <button class="main-btn" onclick="completeChecklist('middag')">Checklist voltooien</button>
-            </div>
+<!-- COORDINATOR -->
+<div id="coordinator-view" class="hidden">
+<h2>Overzicht</h2>
+<ul id="overview"></ul>
+<div id="detail"></div>
+</div>
 
-             <div id="avond" class="checklist">
-                <h2>Avonddienst(C-dienst)</h2>
-                <!-- Taken -->
-                <div class="task"><label><input type="checkbox" class="task-check"> Honden eten geven</label></div>
-                <div class="task"><label><input type="checkbox" class="task-check"> Wandeling</label></div>
-                <div class="task"><label><input type="checkbox" class="task-check"> Avondmaaltijd</label></div>
-                <div class="task"><label><input type="checkbox" class="task-check"> Buitenlichten aan</label></div>
-                <div class="task"><label><input type="checkbox" class="task-check"> Baden</label></div>
-                <div class="task"><label><input type="checkbox" class="task-check"> Tandenpoetsen</label></div>
-                <div class="task"><label><input type="checkbox" class="task-check"> Bed</label></div>
+</div>
 
-                <button class="main-btn" onclick="completeChecklist('avond')">Checklist voltooien</button>
-            </div>
+<script>
+const SUPABASE_URL = "https://rdytzmzadcmvtougqlcp.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJkeXR6bXphZGNtdnRvdWdxbGNwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk3NzkyOTUsImV4cCI6MjA4NTM1NTI5NX0.V7smr9bVPAhxVFROnG59dE0QFj4XKi5EGoPggY2BhmU";
 
-            <div id="nacht" class="checklist">
-                <h2>Nachtdienst(D-dienst)</h2>
-                <div class="task"><label><input type="checkbox" class="task-check"> Lichten uit in de gang</label></div>
-                <div class="task"><label><input type="checkbox" class="task-check"> Lichten uit in de achterkamer</label></div>
-                <div class="task"><label><input type="checkbox" class="task-check"> Lichten uit in de keuken</label></div>
-                <div class="task"><label><input type="checkbox" class="task-check"> Lichten uit in de eetzaal</label></div>
-                <div class="task"><label><input type="checkbox" class="task-check"> Stekker uit stopcontact gasfornuis</label></div>
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-                <button class="main-btn" onclick="completeChecklist('nacht')">Checklist voltooien</button>
-            </div>
+let currentUser = null;
+let userRole = "employee";
 
-            <div id="result"></div>
-        </div>
+// signup
+async function signup() {
+    const { error } = await supabase.auth.signUp({
+        email: emailEl().value,
+        password: passEl().value
+    });
 
-        <!-- Coördinator view -->
-        <div id="coordinator-view" class="hidden">
-            <h2>Overzicht ingevulde checklists</h2>
-            <ul id="overview-list" class="overview-list"></ul>
-            <div id="overview-detail"></div>
-        </div>
-    </div>
+    if (error) showError(error.message);
+    else alert("Account aangemaakt!");
+}
 
-    <script>
-        // Gebruikers met hashes (voeg coördinator toe)
-        const users = {
-            "wendy": "607720de004600e7737e61175190a9fbebbb285baec7807fe59f7327da9e8304",
-            "janique": "3df867040f4de3c457aca78437531105750a51250fbf0d527e6911b247ea77cd",
-            "nicole": "ecff4eb88910e05ed37ffff83bd7be2e7d8d78b88b9c8cc55d7242c79ec10ef0",
-            "mildred": "2a55c14b87c79ecbf6d6807bed30a215a68cd4f52c61d51f69e23b4ee8b348a4",
-            "brenda": "42b3ea03f192b5749336b2a857108826f449246d3f50bf9e216f08af5d7e0fae",
-            "merlien": "3dd2c57a014354de94dae7a88997c5d2f9eb2df7167d83cd51ca32dd08d18b25",
-            "inval": "da0b35df4cab64d2b71eb3c57ceb7018902d4ce79062c9452bc1a96931359b0f",
-            "coordinator": "a9dc02024ab63d8bd1c2e26fbcaa87f9516dfdab4b8f833161051f03ea71306d"
+// login
+async function login() {
+    const { data, error } = await supabase.auth.signInWithPassword({
+        email: emailEl().value,
+        password: passEl().value
+    });
+
+    if (error) return showError(error.message);
+
+    await loadUserProfile(data.user);
+}
+
+// profiel laden
+async function loadUserProfile(user) {
+    currentUser = user;
+
+    const { data } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", user.id)
+        .single();
+
+    userRole = data.role;
+
+    startApp();
+}
+
+// app starten
+function startApp() {
+    document.getElementById("login-screen").classList.add("hidden");
+    document.getElementById("app").classList.remove("hidden");
+
+    document.getElementById("logged-in-as").innerText =
+        currentUser.email + " (" + userRole + ")";
+
+    if (userRole === "coordinator") {
+        document.getElementById("employee-view").classList.add("hidden");
+        document.getElementById("coordinator-view").classList.remove("hidden");
+        loadOverview();
+        subscribeRealtime();
+    }
+}
+
+// logout
+async function logout() {
+    await supabase.auth.signOut();
+    location.reload();
+}
+
+// checklist opslaan
+async function completeChecklist(type) {
+    const div = document.getElementById(type);
+    const tasks = div.querySelectorAll(".task");
+
+    let summary = `${type} - ${currentUser.email}\n`;
+
+    tasks.forEach(t => {
+        const checked = t.querySelector("input").checked;
+        summary += (checked ? "✓ " : "✗ ") + t.innerText + "\n";
+    });
+
+    await supabase.from("checklists").insert([{
+        user_id: currentUser.id,
+        user_name: currentUser.email,
+        dienst: type,
+        summary: summary
+    }]);
+
+    document.getElementById("result").innerText = "Opgeslagen!";
+}
+
+// overzicht
+async function loadOverview() {
+    const { data } = await supabase
+        .from("checklists")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+    const list = document.getElementById("overview");
+    list.innerHTML = "";
+
+    data.forEach(item => {
+        const li = document.createElement("li");
+        li.innerText = item.user_name + " - " + item.dienst;
+
+        li.onclick = () => {
+            document.getElementById("detail").innerText = item.summary;
         };
 
-        let currentUser = null;
-        let isCoordinator = false;
+        list.appendChild(li);
+    });
+}
 
-        async function hashPassword(password) {
-            const encoder = new TextEncoder();
-            const data = encoder.encode(password);
-            const hash = await crypto.subtle.digest('SHA-256', data);
-            return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
-        }
+// realtime
+function subscribeRealtime() {
+    supabase.channel("checklists")
+        .on("postgres_changes", {
+            event: "INSERT",
+            schema: "public",
+            table: "checklists"
+        }, loadOverview)
+        .subscribe();
+}
 
-        const now = new Date();
-        document.getElementById('date-time').textContent = `Datum: ${now.toLocaleDateString('nl-NL')} | Tijd: ${now.toLocaleTimeString('nl-NL')}`;
+// tabs
+function openTab(name) {
+    document.querySelectorAll(".checklist").forEach(el => el.classList.remove("active"));
+    document.querySelectorAll(".tab").forEach(el => el.classList.remove("active"));
 
-        async function login() {
-            const username = document.getElementById('username').value.trim().toLowerCase();
-            const password = document.getElementById('password').value;
+    document.getElementById(name).classList.add("active");
+    event.target.classList.add("active");
+}
 
-            const hashedPassword = await hashPassword(password);
+// helpers
+function emailEl(){ return document.getElementById("email"); }
+function passEl(){ return document.getElementById("password"); }
+function showError(msg){ document.getElementById("error").innerText = msg; }
 
-            if (users[username] && users[username] === hashedPassword) {
-                currentUser = username.charAt(0).toUpperCase() + username.slice(1);
-                isCoordinator = username === 'coordinator';
-                document.getElementById('login-screen').classList.add('hidden');
-                document.getElementById('app').classList.remove('hidden');
-                document.getElementById('logged-in-as').textContent = `Ingelogd als: ${currentUser}${isCoordinator ? ' (Coördinator)' : ''}`;
+// session check
+(async () => {
+    const { data } = await supabase.auth.getSession();
+    if (data.session) {
+        await loadUserProfile(data.session.user);
+    }
+})();
+</script>
 
-                if (isCoordinator) {
-                    document.getElementById('employee-view').classList.add('hidden');
-                    document.getElementById('coordinator-view').classList.remove('hidden');
-                    loadOverview();
-                } else {
-                    document.getElementById('employee-view').classList.remove('hidden');
-                    document.getElementById('coordinator-view').classList.add('hidden');
-                }
-                document.getElementById('login-error').style.display = 'none';
-            } else {
-                document.getElementById('login-error').style.display = 'block';
-            }
-        }
-
-        function logout() {
-            currentUser = null;
-            isCoordinator = false;
-            document.getElementById('app').classList.add('hidden');
-            document.getElementById('login-screen').classList.remove('hidden');
-            document.getElementById('result').innerHTML = '';
-            document.getElementById('overview-detail').innerHTML = '';
-        }
-
-        function openTab(tabName) {
-            document.querySelectorAll('.checklist').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
-            document.getElementById(tabName).classList.add('active');
-            document.querySelector(`.tab[onclick="openTab('${tabName}')"]`).classList.add('active');
-            document.getElementById('result').innerHTML = '';
-        }
-
-        // Opslaan en voltooien (voor medewerkers)
-        function completeChecklist(sectionId) {
-            if (isCoordinator || !currentUser) return;
-
-            const checklistDiv = document.getElementById(sectionId);
-            const tasks = checklistDiv.querySelectorAll('.task');
-            const button = checklistDiv.querySelector('.main-btn');
-
-            let hasUnchecked = false;
-            let allReasonsFilled = true;
-
-            tasks.forEach(task => {
-                const checkbox = task.querySelector('.task-check');
-                if (!checkbox.checked) {
-                    hasUnchecked = true;
-                    let reasonDiv = task.querySelector('.reason');
-                    if (!reasonDiv) {
-                        reasonDiv = document.createElement('div');
-                        reasonDiv.className = 'reason';
-                        reasonDiv.innerHTML = `<label>Reden waarom niet uitgevoerd:</label><textarea placeholder="Verplicht invullen..."></textarea>`;
-                        task.appendChild(reasonDiv);
-                    }
-                    reasonDiv.style.display = 'block';
-                    const textarea = reasonDiv.querySelector('textarea');
-                    if (textarea.value.trim() === '') allReasonsFilled = false;
-                }
-            });
-
-            if (!hasUnchecked || (hasUnchecked && allReasonsFilled)) {
-                let summary = `=== ${checklistDiv.querySelector('h2').textContent} ===\n`;
-                summary += `Datum: ${now.toLocaleDateString('nl-NL')} | Tijd: ${now.toLocaleTimeString('nl-NL')}\n`;
-                summary += `Medewerker: ${currentUser}\n\nTaken:\n`;
-
-                tasks.forEach(task => {
-                    const checkbox = task.querySelector('.task-check');
-                    const label = task.querySelector('label').textContent.trim();
-                    if (checkbox.checked) {
-                        summary += `✓ ${label}\n`;
-                    } else {
-                        const reason = task.querySelector('.reason textarea').value.trim();
-                        summary += `✗ ${label}\n   Reden: ${reason}\n\n`;
-                    }
-                });
-
-                summary += `Klaar!`;
-
-                // Opslaan in localStorage
-                let savedChecklists = JSON.parse(localStorage.getItem('checklists') || '[]');
-                savedChecklists.push({
-                    date: now.toLocaleDateString('nl-NL'),
-                    time: now.toLocaleTimeString('nl-NL'),
-                    user: currentUser,
-                    dienst: checklistDiv.querySelector('h2').textContent,
-                    summary: summary
-                });
-                localStorage.setItem('checklists', JSON.stringify(savedChecklists));
-
-                document.getElementById('result').innerHTML = `<h2>Checklist voltooid en opgeslagen!</h2><pre>${summary}</pre>`;
-                button.textContent = 'Checklist voltooien';
-            } else {
-                alert('Vul de redenen in voor de niet-afgevinkte taken.');
-                button.textContent = 'Definitief voltooien';
-            }
-        }
-
-        // Overzicht laden (voor coördinator)
-        function loadOverview() {
-            const savedChecklists = JSON.parse(localStorage.getItem('checklists') || '[]');
-            const list = document.getElementById('overview-list');
-            list.innerHTML = '';
-
-            if (savedChecklists.length === 0) {
-                list.innerHTML = '<p>Geen checklists ingevuld yet.</p>';
-                return;
-            }
-
-            savedChecklists.reverse().forEach((item, index) => {
-                const li = document.createElement('li');
-                li.className = 'overview-item';
-                li.textContent = `${item.date} ${item.time} - ${item.user} - ${item.dienst}`;
-                li.onclick = () => {
-                    document.getElementById('overview-detail').innerHTML = `<h3>Details</h3><pre>${item.summary}</pre>`;
-                };
-                list.appendChild(li);
-            });
-        }
-    </script>
 </body>
-
 </html>
-
-
-
-
-
-
-
-
-
